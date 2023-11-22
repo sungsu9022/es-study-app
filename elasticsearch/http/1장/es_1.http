@@ -2,3 +2,18 @@
 GET /
 Host: localhost:9200
 Content-Type: application/json
+
+### 클러스터 확인
+GET /_cluster/health?pretty
+Host: localhost:9200
+Content-Type: application/json
+
+### 클러스터 샤드 확인
+GET /_cluster/health?level=shards
+Host: localhost:9200
+Content-Type: application/json
+
+### 클러스터 확인
+GET /_cat/health?v
+Host: localhost:9200
+Content-Type: application/json

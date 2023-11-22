@@ -64,5 +64,8 @@ build
 cache
 out
 db/
+data01/
+data02/
+data03/
 
 .env

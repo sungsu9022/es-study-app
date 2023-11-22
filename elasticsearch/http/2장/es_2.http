@@ -1,6 +1,6 @@
 ### 2.1.1 문서 색인1
 
-PUT /my_index/_doc/2
+PUT /my_index/_doc/1
 Host: localhost:9200
 Content-Type: application/json
 
