@@ -1,0 +1,11 @@
+spring:
+  config:
+    activate:
+      on-profile: security
+
+
+starter:
+  security:
+    swagger-ui-path: /document/swagger-ui/index.html
+
+--- # local

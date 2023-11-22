@@ -1,0 +1,11 @@
+spring:
+  config:
+    activate:
+      on-profile: jasypt
+
+jasypt:
+  encryptor:
+    bean: jasyptEncryptor
+    password: ${JASYPT_PASSWORD}
+
+--- # local

@@ -1,0 +1,40 @@
+spring:
+  config:
+    activate:
+      on-profile: rdb
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/starter
+    username: starter
+    password: starter
+    configuration:
+      hikari:
+        auto-commit: false
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    database: MYSQL
+    generate-ddl: false
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+      # naming:
+        # physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        # implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        generate_statistics: true
+        default_batch_fetch_size: 1000
+
+
+--- # dev
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: ENC(uTpr9wS8B4HWklt5YeLkDuVj/9D0cmORve7fNWNdoFcd2zEeZKNuY4jR40Xf+n+w)
+    username: ENC(brcWzTwMJsoFqKjxw+vYvw==)
+    password: ENC(kzLMIJzxqettg6CK2XqUK/TLqdp89kFyfJTTLmf7VdM=)

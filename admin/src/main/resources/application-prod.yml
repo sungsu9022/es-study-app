@@ -1,0 +1,29 @@
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        boot:
+          autoconfigure: ERROR
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  thymeleaf:
+    cache: true
+    prefix: classpath:/templates/
+
+starter:
+  security:
+    swagger-ui-path: /document/swagger-ui/index.html
+
+
+springdoc:
+  packagesToScan: com.starter.admin.app
+  api-docs:
+    enabled: false
+    path: /document/api-docs
+  swagger-ui:
+    enabled: false
+    path: /document/swagger-ui.html

@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: starter-db-migration
+  messages:
+    encoding: UTF-8
+  profiles:
+    include:
+      - rdb
+  flyway:
+    locations: flyway/migrations
+    enabled: true
+    url: jdbc:mysql://localhost:3306/starter
+    encoding: UTF-8
+    user: starter
+    password: starter
+    baseline-version: 0
+    baseline-on-migrate: true
+
+server:
+  port: 9900
+  error:
+    whitelabel:
+      enabled: false
+  shutdown: graceful
+  tomcat:
+    accesslog:
+      enabled: true
+      directory:
+      prefix: db-migration.access-log
+    basedir: logs/tomcat/db-migration/
+
+

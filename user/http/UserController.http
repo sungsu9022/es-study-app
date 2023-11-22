@@ -1,0 +1,16 @@
+
+
+### crate users
+POST /api/users
+Host: localhost:9902
+Content-Type: application/json
+
+{"email":"sungsu9022@naver.com","userName":"sungsu"}
+
+### get users
+GET /api/users/81b51fc9-d66d-457c-8c32-a507ad76ea12
+Host: localhost:9902
+
+### get user by name
+GET /api/users/name?name=sungsu
+Host: localhost:9902
