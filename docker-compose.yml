@@ -3,7 +3,6 @@ services:
   rdb:
     platform: linux/x86_64
     image: mysql:8
-    restart: always
     container_name: starter-rdb
     command:
       - --character-set-server=utf8mb4
@@ -32,6 +31,11 @@ services:
       memlock:
         soft: -1
         hard: -1
+    command: >
+      bash -c '
+        bin/elasticsearch-plugin install analysis-nori
+        exec /usr/local/bin/docker-entrypoint.sh
+      '
     volumes:
       - ./data01:/usr/share/elasticsearch/data
     ports:
@@ -53,6 +57,11 @@ services:
       memlock:
         soft: -1
         hard: -1
+    command: >
+      bash -c '
+        bin/elasticsearch-plugin install analysis-nori
+        exec /usr/local/bin/docker-entrypoint.sh
+      '
     volumes:
       - ./data02:/usr/share/elasticsearch/data
     networks:
@@ -72,6 +81,11 @@ services:
       memlock:
         soft: -1
         hard: -1
+    command: >
+      bash -c '
+        bin/elasticsearch-plugin install analysis-nori
+        exec /usr/local/bin/docker-entrypoint.sh
+      '
     volumes:
       - ./data03:/usr/share/elasticsearch/data
     networks:

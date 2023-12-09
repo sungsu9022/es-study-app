@@ -1,0 +1,608 @@
+### 3.1 인덱스 조회
+GET /my_index/_settings
+Host: localhost:9200
+Content-Type: application/json
+
+
+### 3.1.2 인덱스 설정 변경
+PUT /my_index/_settings
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "index.number_of_replicas": 0
+}
+
+### 3.1.3 인덱스 설정 변경
+PUT /my_index/_settings
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "index.refresh_interval": "1s"
+}
+
+### 3.1.4 인덱스 설정을 지정하여 인덱스 생성
+PUT /my_index2
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "settings": {
+    "index.number_of_shards": 2,
+    "index.number_of_replicas": 2
+  }
+}
+
+### 3.1.5 인덱스 삭제
+DELETE /my_index2
+Host: localhost:9200
+
+
+### 3.1.6 인덱스 설정 조회
+GET /my_index2
+Host: localhost:9200
+
+
+### 3.2. 맵핑과 필드 타입 > 데이터 생성
+PUT /my_index2/_doc/1
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "title": "Hello world",
+  "views": 1234,
+  "public": true,
+  "point": 4.5,
+  "created" : "2023-11-18T20:00:00.000Z"
+}
+
+### 3.2. 맵핑과 필드 타입 > 인덱스 조히
+GET /my_index2
+Host: localhost:9200
+Content-Type: application/json
+
+### 3.2.1 동적 맵핑  vs 명시적 맵핑
+PUT /mapping_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "mappings": {
+    "properties": {
+      "createdDate":{
+        "type": "date",
+        "format": "strict_date_time || epoch_millis"
+      },
+      "keywordString": {
+        "type": "keyword"
+      },
+      "textString": {
+        "type": "text"
+      }
+    }
+  },
+  "settings": {
+    "index.number_of_shards": 1,
+    "index.number_of_replicas": 1
+  }
+}
+
+### 3.2.1 맵핑 신규 필드 추가
+PUT /mapping_test/_mapping
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "properties": {
+    "longValue": {
+      "type": "long"
+      }
+    }
+}
+
+### 3.2.1 맵핑 조회
+GET /mapping_test/_mapping
+Host: localhost:9200
+
+### 3.2.2 dateType 추가
+PUT /mapping_test/_doc/1
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "createdDate": "2020-09-03T02:41:32.001Z"
+}
+
+### 3.2.2 dateType 추가2
+PUT /mapping_test/_doc/2
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "createdDate": 1599068514123
+}
+
+### 3.2.2 dateType 조회
+GET /mapping_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "range": {
+      "createdDate": {
+        "gte": "2020-09-02T17:00:00.000Z",
+        "lte": "2020-09-03T03:00:00.000Z"
+      }
+    }
+  }
+}
+
+### 3.2.2 배열 인덱스 생성
+PUT /array_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "mappings": {
+    "properties": {
+      "longField": {
+        "type": "long"
+      },
+      "keywordField": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+
+### 3.2.2 배열 인덱스 doc 추가
+PUT /array_test/_doc/1
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "longField": 309,
+  "keywordField": ["hello", "world"]
+}
+
+### 3.2.2 배열 인덱스 doc 추가2
+PUT /array_test/_doc/2
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "longField": [221, 309, 1599208568],
+  "keywordField": "hello"
+}
+
+### 3.2.2 배열 인덱스 doc 추가 실패
+PUT /array_test/_doc/2
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "longField": [221, "hello"]
+}
+
+### 3.2.2 배열 인덱스 조회
+GET /array_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "term": {
+      "longField": 309
+    }
+  }
+}
+
+### 3.2.2 object 타입 인덱스 doc 추가
+PUT /object_test/_doc/1
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "price": 27770.75,
+  "spec": {
+    "cores":12,
+    "memory": 128,
+    "storage": 8000
+  }
+}
+
+
+### 3.2.2 object 타입 인덱스 mapping 조회
+GET /object_test/_mappings
+Host: localhost:9200
+Content-Type: application/json
+
+
+### 3.2.2 object 타입과 nested 타입의 배열 처리시 다른점
+### object 타입 배열로 색인
+PUT /object_test/_doc/2
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "spec": [
+    {
+      "cores":12,
+      "memory": 128,
+      "storage": 8000
+    },
+    {
+      "cores":6,
+      "memory": 64,
+      "storage": 8000
+    },
+    {
+      "cores":6,
+      "memory": 32,
+      "storage": 4000
+    }
+  ]
+}
+
+### 3.2.2 object 타입 배열에 대한 색인 확인
+GET /object_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "spec.cores": "6"
+          }
+        },
+        {
+          "term": {
+            "spec.memory": "128"
+          }
+        }
+      ]
+    }
+  }
+}
+
+### 3.2.2 nest type test
+### nested type index 추가
+PUT /nested_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "mappings": {
+    "properties": {
+      "spec":{
+        "type": "nested",
+        "properties": {
+          "cores": {
+            "type": "long"
+          },
+          "memory": {
+            "type": "long"
+          },
+          "storage": {
+            "type": "long"
+          }
+        }
+      }
+    }
+  }
+}
+
+### nested type doc 추가
+PUT /nested_test/_doc/1
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "spec": [
+    {
+      "cores":12,
+      "memory": 128,
+      "storage": 8000
+    },
+    {
+      "cores":6,
+      "memory": 64,
+      "storage": 8000
+    },
+    {
+      "cores":6,
+      "memory": 32,
+      "storage": 4000
+    }
+  ]
+}
+
+### nested 타입 search
+GET /nested_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "spec.cores": "6"
+          }
+        },
+        {
+          "term": {
+            "spec.memory": "128"
+          }
+        }
+      ]
+    }
+  }
+}
+
+### nested 전용 쿼리 search
+GET /nested_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "nested": {
+      "path": "spec",
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "spec.cores": "6"
+              }
+            },
+            {
+              "term": {
+                "spec.memory": "64"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+
+
+### text타입과 keyword 타입 차이
+### mapping_test mapping 정보 조회
+GET /mapping_test/_mapping
+Host: localhost:9200
+
+### doc 추가
+PUT /mapping_test/_doc/3
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "keywordString" : "Hello, World!",
+  "textString" : "Hello, World!"
+}
+
+### textString 검색
+GET /mapping_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "textString": "hello"
+    }
+  }
+}
+
+### keywordString 검색
+GET /mapping_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "keywordString": "hello"
+    }
+  }
+}
+
+### textString 애널라이저 검색
+GET /mapping_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "textString": "THE WORLD SAID HELLO"
+    }
+  }
+}
+
+### 3.2.3 doc_values
+### doc_values mappaing
+PUT /mapping_test/_mapping
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "properties": {
+    "notForSort":{
+      "type": "keyword",
+      "doc_values": false
+    }
+  }
+}
+
+### 3.2.4 fielddata mappaing
+PUT /mapping_test/_mapping
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "properties": {
+    "sortableText":{
+      "type": "text",
+      "fielddata": true
+    }
+  }
+}
+
+### 3.2.5 _source
+PUT /no_source_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "mappings": {
+    "_source": {
+      "enabled": false
+    }
+  }
+}
+
+### index codec 변경
+PUT /codec_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "settings": {
+    "index": {
+      "codec": "best_compression"
+    }
+  }
+}
+
+### synthetic source 지정
+PUT /synthetic source_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "mappings": {
+    "_source": {
+      "mode": "synthetic"
+    }
+  }
+}
+
+### 3.2.6 index
+### no index
+PUT /mapping_test/_mapping
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "properties": {
+    "notSearchableText": {
+      "type": "text",
+      "index": false
+    },
+    "docValueSearchableText": {
+      "type": "keyword",
+      "index": false
+    }
+  }
+}
+
+### no index doc add
+PUT /mapping_test/_doc/4
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "textString": "Hello, World!",
+  "notSearchableText": "World, Hello!",
+  "docValueSearchableText": "hello"
+}
+
+### no index search error
+GET /mapping_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "notSearchableText": "hello"
+    }
+  }
+}
+
+### no index doc add
+PUT /mapping_test/_doc/4
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "textString": "Hello, World!",
+  "notSearchableText": "World, Hello!",
+  "docValueSearchableText": "hello"
+}
+
+### no index doc_values search
+GET /mapping_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "docValueSearchableText": "hello"
+    }
+  }
+}
+
+### 3.2.7 enabled
+### endabled mapping
+PUT /mapping_test/_mapping
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "properties": {
+    "notEnabled": {
+      "type": "object",
+      "enabled": false
+    }
+  }
+}
+
+### endabled doc add
+PUT /mapping_test/_doc/5
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "notEnabled": {
+    "mixedTypeArray": [
+      "hello",
+      4,
+      false,
+      {"foo": "bar"},
+      null,
+      [2, "E"]
+    ]
+  }
+}
+
+### endabled doc add2
+PUT /mapping_test/_doc/6
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "notEnabled": "world"
+}

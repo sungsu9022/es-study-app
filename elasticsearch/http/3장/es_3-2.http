@@ -1,0 +1,479 @@
+### 3.3.1 analyze API
+POST /_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "analyzer": "standard",
+  "text": "Hello, HELLO, World!"
+}
+
+### 3.3.2 캐릭터 필터
+POST /_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "char_filter": ["html_strip"],
+  "text": "<p>I&apos;m so <b>happy</b>!</p>"
+}
+
+### 3.3.3 토크나이저
+### keyword 토크나이저
+POST /_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "tokenizer": "keyword",
+  "text": "Hello, HELLO, World!"
+}
+
+
+### ngram 토크나이저
+POST /_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "tokenizer": {
+    "type": "ngram",
+    "min_gram": 3,
+    "max_gram": 4
+  },
+  "text": "Hello, World!"
+}
+
+### ngram 토크나이저2
+POST /_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "tokenizer": {
+    "type": "ngram",
+    "min_gram": 3,
+    "max_gram": 4,
+    "token_chars": ["letter"]
+  },
+  "text": "Hello, World!"
+}
+
+### edge_ngram 토크나이저
+POST /_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "tokenizer": {
+    "type": "edge_ngram",
+    "min_gram": 3,
+    "max_gram": 4,
+    "token_chars": ["letter"]
+  },
+  "text": "Hello, World!"
+}
+
+### 3.3.4 token filter 테스트
+POST /_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "filter": [ "lowercase" ],
+  "text": "Hello, World!"
+}
+
+### 3.3.5 내장 애널라이저
+POST /_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "analyzer": "fingerprint",
+  "text": "Yes yes, Global said this sentence is consistent and."
+}
+
+### 3.3.6 애널라이저를 매핑에 적용
+PUT /analyzer_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "default": {
+          "type": "keyword"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "defaultText":{
+        "type": "text",
+        "analyzer": "keyword"
+      },
+      "standardText": {
+        "type": "text",
+        "analyzer": "standard"
+      }
+    }
+  }
+}
+
+### 3.3.6 삭제
+DELETE /analyzer_test
+Host: localhost:9200
+Content-Type: application/json
+
+
+### 3.3.7 커스텀 애널라이저
+PUT /analyzer_test2
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "settings": {
+    "analysis": {
+      "char_filter": {
+        "my_char_filter": {
+          "type": "mapping",
+          "mappings": [
+            "i. => 1.",
+            "ii. => 2.",
+            "iii. => 3.",
+            "iv. => 4."
+          ]
+        }
+      },
+      "analyzer": {
+        "my_analyzer": {
+          "char_filter": [
+            "my_char_filter"
+          ],
+          "tokenizer": "whitespace",
+          "filter": [
+            "lowercase"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "myText":{
+        "type": "text",
+        "analyzer": "my_analyzer"
+      }
+    }
+  }
+}
+
+### 3.3.7 커스텀 애널라이저 테스트
+GET /analyzer_test2/_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "analyzer": "my_analyzer",
+  "text": "i.Hello ii.World iii.Bye, iv.World!"
+}
+
+
+### 3.3.8 플러그인 설치를 통한 애널라이즈 추가 및 한국어 형태소 분석
+GET /_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "analyzer": "nori",
+  "text": "우리는 컴퓨터를 다룬다."
+}
+
+
+### 3.3.9 노멀라이저
+PUT /normalizer_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "settings": {
+    "analysis": {
+      "normalizer": {
+        "my_normalizer": {
+          "type": "custom",
+          "char_filter": [],
+          "filter": [
+            "asciifolding",
+            "uppercase"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "myNormalizerKeyword": {
+        "type": "keyword",
+        "normalizer": "my_normalizer"
+      },
+      "lowercaseKeyword": {
+        "type": "keyword",
+        "normalizer": "lowercase"
+      },
+      "defaultKeyword": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+
+### 3.3.9 test
+GET /normalizer_test/_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "field": "myNormalizerKeyword",
+  "text": "Happy World!!"
+}
+
+### 3.3.9 test2
+GET /normalizer_test/_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "field": "lowercaseKeyword",
+  "text": "Happy World!!"
+}
+
+### 3.3.9 test3
+GET /normalizer_test/_analyze
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "field": "defaultKeyword",
+  "text": "Happy World!!"
+}
+
+
+### 3.4.1 인덱스 템플릿
+### 템플릿 정의
+PUT /_index_template/my_template
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "index_patterns": [
+    "pattern_test_index-*",
+    "another_pattern-*"
+  ],
+  "priority": 1,
+  "template": {
+    "settings": {
+      "number_of_shards": 2,
+      "number_of_replicas": 2
+    },
+    "mappings": {
+      "properties": {
+        "myTextField": {
+          "type": "text"
+        }
+	    }
+    }
+  }
+}
+
+### 템플릿 패턴에 일치하는 인덱스 생성
+PUT /pattern_test_index-1
+Host: localhost:9200
+Content-Type: application/json
+
+### 템플릿 패턴에 일치하는 인덱스 조회
+GET /pattern_test_index-1
+Host: localhost:9200
+Content-Type: application/json
+
+
+### 3.4.2 컴포넌트 템플릿
+### 컴포넌트 템플릿 정의1
+PUT /_component_template/timestamp_mappings
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "template": {
+    "mappings": {
+      "properties": {
+        "timestamp": {
+          "type": "date"
+        }
+      }
+    }
+  }
+}
+
+### 컴포넌트 템플릿 정의2
+PUT /_component_template/my_shard_settings
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "template": {
+    "settings": {
+      "number_of_shards": 2,
+      "number_of_replicas": 2
+    }
+  }
+}
+
+### 컴포넌트 템플릿을 사용한 인덱스 템플릿 생성
+PUT /_index_template/my_template2
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "index_patterns": [
+    "timestamp-index-*"
+  ],
+  "composed_of": ["timestamp_mappings", "my_shard_settings"]
+}
+
+### 인덱스 생성
+PUT /timestamp-index-001
+Host: localhost:9200
+Content-Type: application/json
+
+### 인덱스 조회
+GET /timestamp-index-001
+Host: localhost:9200
+Content-Type: application/json
+
+
+### 3.4.4 동적 템플릿
+PUT /_index_template/dynamic_mapping_template
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "index_patterns": ["dynamic_mapping*"],
+  "priority": 1,
+  "template": {
+    "settings": {
+      "number_of_shards": 2,
+      "number_of_replicas": 2
+    },
+    "mappings": {
+      "dynamic_templates": [
+        {
+          "my_text": {
+            "match_mapping_type": "string",
+            "match": "*_text",
+            "mapping": {
+              "type": "text"
+            }
+          }
+        },
+        {
+          "my_keyword": {
+            "match_mapping_type": "string",
+            "match": "*_keyword",
+            "mapping": {
+              "type": "keyword"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+### 3.5 라우팅
+PUT /routing_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "settings": {
+    "number_of_shards": 5,
+    "number_of_replicas": 1
+  }
+}
+
+### 3.5 라우팅
+### 인덱스 생성
+PUT /routing_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "settings": {
+    "number_of_shards": 5,
+    "number_of_replicas": 1
+  }
+}
+
+
+### 라우팅 색인
+PUT /routing_test/_doc/1?routing=myid
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "login_id": "myid",
+  "comment": "hello world",
+  "created_at": "2020-09-08T22:14:09.123Z"
+}
+
+### 라우팅 색인2
+PUT /routing_test/_doc/1?routing=myid2
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "login_id": "myid2",
+  "comment": "hello world2",
+  "created_at": "2020-09-09T22:14:09.123Z"
+}
+
+### 조회(전체 샤드 대상으로 조회가 이루어짐)
+GET /routing_test/_search
+Host: localhost:9200
+Content-Type: application/json
+
+### 조회
+GET /routing_test/_search?routing=myid
+Host: localhost:9200
+Content-Type: application/json
+
+### 조회2
+GET /routing_test/_search?routing=myid2
+Host: localhost:9200
+Content-Type: application/json
+
+### 3.5.2 인덱스 매핑에서 라우팅을 필수로 지정하기
+### 인덱스 생성
+PUT /routing_test2
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "mappings": {
+    "_routing": {
+      "required": true
+    }
+  }
+}
+
+### 인덱스 색인 테스트
+PUT /routing_test2/_doc/1
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "comment": "index without routing"
+}
