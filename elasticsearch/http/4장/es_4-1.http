@@ -232,3 +232,485 @@ Content-Type: application/json
 GET /my_index*,analyzer_test*,mapping_test/_search
 Host: localhost:9200
 Content-Type: application/json
+
+
+### 4.3.2 쿼리 DSL 검색과 쿼리 문자열 검색
+### 쿼리 DSL
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "title" : "hello"
+    }
+  }
+}
+
+### 쿼리 문자열
+GET /my_index2/_search?q=title:hello
+Host: localhost:9200
+Content-Type: application/json
+
+
+### 4.3.4 match
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "fieldName": {
+        "query": "test query sentence",
+        "operator": "or"
+      }
+    }
+  }
+}
+
+### 4.3.5 term
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "term": {
+      "fieldName": {
+        "value": "hello"
+      }
+    }
+  }
+}
+
+### 4.3.6 terms
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "terms": {
+      "fieldName": ["hello", "world"]
+    }
+  }
+}
+
+### 4.3.7 range
+### ex1
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "range": {
+      "fieldName": {
+        "gte": 100,
+        "lt": 200
+      }
+    }
+  }
+}
+
+### ex2 - date
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "range": {
+      "fieldName": {
+        "gte": "2019-01-15T00:00:00.000Z||+36h/d",
+        "lt": "now-3h/d"
+      }
+    }
+  }
+}
+
+### 4.3.8 prefix 쿼리
+### 문법
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "prefix": {
+      "fieldName": {
+        "value": "hello"
+      }
+    }
+  }
+}
+
+### index_prefixes
+PUT /prefix_mapping_test
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "mappings": {
+    "properties": {
+      "prefixField": {
+        "type": "text",
+        "index_prefixes": {
+          "min_chars": 3,
+          "max_chars" : 5
+        }
+      }
+    }
+  }
+}
+
+
+### 4.3.9 exists 쿼리
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "exists": {
+      "field": "fieldName"
+	  }
+  }
+}
+
+### 4.3.10 bool 쿼리
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must" : [
+        { "term" : {"field1": {"value": "hello"} } },
+        { "term" : {"field2": {"value": "world"} } }
+      ],
+      "must_not" : [
+        { "term" : {"field4": {"value": "elasticsearch-test"} } }
+      ],
+      "filter" : [
+        { "term" : {"field3": {"value": true} } }
+      ],
+      "should" : [
+        { "match" : {"field4": {"query": "elasticsearch"} } },
+        { "match" : {"field5": {"query": "lucene"} } }
+      ],
+      "minimum_should_match": 1
+    }
+  }
+}
+
+### 4.3.11 constant_score 쿼리
+GET /my_index2/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "constant_score": {
+      "filter" : {
+        "term": {
+          "fieldName": "hello"
+        }
+      }
+    }
+  }
+}
+
+### 4.3.12 주요 매개변수
+### 라우팅
+GET /my_index2/_search?routing=id1
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "constant_score": {
+      "filter" : {
+        "term": {
+          "fieldName": "hello"
+        }
+      }
+    }
+  }
+}
+
+### explain
+GET /my_index2/_search?explain=true
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "constant_score": {
+      "filter" : {
+        "term": {
+          "fieldName": "hello"
+        }
+      }
+    }
+  }
+}
+
+### explain ex put
+PUT /my_index3/_doc/1
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "field1": "hello",
+  "field2": "world",
+  "field3": true,
+  "field4": "elasticsearch",
+  "field5": "lucene"
+}
+
+### explain ex
+GET /my_index3/_search?explain=true
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must" : [
+        { "term" : {"field1": {"value": "hello"} } },
+        { "term" : {"field2": {"value": "world"} } }
+      ],
+      "must_not" : [
+        { "term" : {"field4": {"value": "elasticsearch-test"} } }
+      ],
+      "filter" : [
+        { "term" : {"field3": {"value": true} } }
+      ],
+      "should" : [
+        { "match" : {"field4": {"query": "elasticsearch"} } },
+        { "match" : {"field5": {"query": "lucene"} } }
+      ],
+      "minimum_should_match": 1
+    }
+  }
+}
+
+
+### search_type
+GET /my_index3/_search?search_type=dfs_query_then_fetch
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must" : [
+        { "term" : {"field1": {"value": "hello"} } },
+        { "term" : {"field2": {"value": "world"} } }
+      ],
+      "must_not" : [
+        { "term" : {"field4": {"value": "elasticsearch-test"} } }
+      ],
+      "filter" : [
+        { "term" : {"field3": {"value": true} } }
+      ],
+      "should" : [
+        { "match" : {"field4": {"query": "elasticsearch"} } },
+        { "match" : {"field5": {"query": "lucene"} } }
+      ],
+      "minimum_should_match": 1
+    }
+  }
+}
+
+### 4.3.13 검색결과 정렬
+GET /my_index3/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must" : [
+        { "term" : {"field1": {"value": "hello"} } },
+        { "term" : {"field2": {"value": "world"} } }
+      ]
+    }
+  },
+  "sort": [
+    {"field1": {"order": "desc"} },
+    {"field2": {"order": "asc"} },
+    "field3"
+  ]
+}
+
+### 4.3.14 페이지네이션
+### from과 size
+GET /my_index3/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "from": 0,
+  "size": 10,
+  "query": {
+    "bool": {
+      "must" : [
+        { "term" : {"field1": {"value": "hello"} } },
+        { "term" : {"field2": {"value": "world"} } }
+      ]
+    }
+  }
+}
+
+
+### scroll first
+GET /my_index3/_search?scroll=1m
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 1000,
+  "query": {
+    "bool": {
+      "must" : [
+        { "term" : {"field1": {"value": "hello"} } },
+        { "term" : {"field2": {"value": "world"} } }
+      ]
+    }
+  }
+}
+
+### scroll 2번쨰
+GET /_search/scroll
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "scroll_id": "FGluY2x1ZGVfY29udGV4dF91dWlkDXF1ZXJ5QW5kRmV0Y2gBFnA3S3pUN1JnU1dpYzdVU2tPSEltVGcAAAAAAAACSBZiX2ZEcEdPcVNXT2NpaWI4Mm5nQ1RB",
+  "scroll": "1m"
+}
+
+### 수동 삭제
+DELETE /_search/scroll
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "scroll_id": "FGluY2x1ZGVfY29udGV4dF91dWlkDXF1ZXJ5QW5kRmV0Y2gBFnA3S3pUN1JnU1dpYzdVU2tPSEltVGcAAAAAAAACSBZiX2ZEcEdPcVNXT2NpaWI4Mm5nQ1RB"
+}
+
+### scroll 검색시 성능 향상
+GET /my_index3/_search?scroll=1m
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 1000,
+  "query": {
+    "bool": {
+      "must" : [
+        { "term" : {"field1": {"value": "hello"} } },
+        { "term" : {"field2": {"value": "world"} } }
+      ]
+    }
+  },
+  "sort": ["_doc"]
+}
+
+
+### search_after
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 20,
+  "query": {
+    "term": {
+      "currency" : {
+        "value": "EUR"
+      }
+    }
+  },
+  "sort": [
+    {
+      "order_date": "desc"
+    },
+    {
+      "order_id": "asc"
+    }
+  ]
+}
+
+### search_after next
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 20,
+  "search_after" : [ 1704573590000, "591924" ],
+  "query": {
+    "term": {
+      "currency" : {
+        "value": "EUR"
+      }
+    }
+  },
+  "sort": [
+    {
+      "order_date": "desc"
+    },
+    {
+      "order_id": "asc"
+    }
+  ]
+}
+
+
+### point in time API
+POST /kibana_sample_data_ecommerce/_pit?keep_alive=1m
+Host: localhost:9200
+Content-Type: application/json
+
+### pit id를 활용한 search
+GET /_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 20,
+  "query": {
+    "term": {
+      "currency" : {
+        "value": "EUR"
+      }
+    }
+  },
+  "sort": [
+    {
+      "order_date": "desc"
+    },
+    {
+      "order_id": "asc"
+    }
+  ],
+  "pit": {
+    "id": "gcSHBAEca2liYW5hX3NhbXBsZV9kYXRhX2Vjb21tZXJjZRZsMFQydEtZeVRuZWdHQmhxRjh0STV3ABZmOEFhOXNqLVJiYU9lYnIzYWNEY3hRAAAAAAAAAAw1FkdhdW1CUXBtUmFLdURtam1SdFhiVVEAARZsMFQydEtZeVRuZWdHQmhxRjh0STV3AAA=",
+    "keep_alive": "1m"
+  }
+}
+
+### pit 삭제
+DELETE /_pit
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "id": "gcSHBAEca2liYW5hX3NhbXBsZV9kYXRhX2Vjb21tZXJjZRZsMFQydEtZeVRuZWdHQmhxRjh0STV3ABZmOEFhOXNqLVJiYU9lYnIzYWNEY3hRAAAAAAAAAAw1FkdhdW1CUXBtUmFLdURtam1SdFhiVVEAARZsMFQydEtZeVRuZWdHQmhxRjh0STV3AAA="
+}

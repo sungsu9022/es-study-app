@@ -1,4 +1,5 @@
-rootProject.name = 'starter'
+
+rootProject.name = 'es-study-app'
 
 include 'core'
 include 'admin'
