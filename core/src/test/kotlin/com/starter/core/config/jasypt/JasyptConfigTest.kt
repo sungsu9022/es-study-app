@@ -1,5 +1,6 @@
 package com.starter.core.config.jasypt
 
+import com.starter.core.jasypt.config.JasyptConfig
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import mu.KotlinLogging

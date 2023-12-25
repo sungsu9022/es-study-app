@@ -1,6 +1,6 @@
 package com.starter.user.app.user.facade
 
-import com.starter.core.domain.user.models.UserVO
+import com.starter.core.rdb.domain.user.models.UserVO
 import com.starter.user.app.user.service.UserService
 import mu.KotlinLogging
 import org.springframework.stereotype.Service

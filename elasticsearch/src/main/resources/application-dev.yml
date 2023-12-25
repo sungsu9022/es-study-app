@@ -1,0 +1,12 @@
+logging:
+  level:
+    root: DEBUG
+    org:
+      springframework:
+        boot:
+          autoconfigure: ERROR
+
+spring:
+  config:
+    activate:
+      on-profile: dev

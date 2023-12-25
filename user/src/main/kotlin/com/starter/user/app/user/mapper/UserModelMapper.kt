@@ -1,6 +1,6 @@
 package com.starter.user.app.user.mapper
 
-import com.starter.core.domain.user.repository.User
+import com.starter.core.rdb.domain.user.repository.User
 import com.starter.user.app.user.model.UserCreateRequest
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers

@@ -1,0 +1,389 @@
+### 4.4.1 집계 기본
+### sum
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "term": {
+      "currency" : {
+        "value": "EUR"
+      }
+    }
+  },
+  "aggs": {
+    "my-sum-aggregation-name": {
+      "sum" : {
+        "field":"taxless_total_price"
+      }
+    }
+  }
+}
+
+### avg
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "term": {
+      "currency" : {
+        "value": "EUR"
+      }
+    }
+  },
+  "aggs": {
+    "my-avg-aggregation-name": {
+      "avg" : {
+        "field":"taxless_total_price"
+      }
+    }
+  }
+}
+
+### stats
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "term": {
+      "currency" : {
+        "value": "EUR"
+      }
+    }
+  },
+  "aggs": {
+    "my-stats-aggregation-name": {
+      "stats" : {
+        "field":"taxless_total_price"
+      }
+    }
+  }
+}
+
+### cardinality
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "term": {
+      "currency" : {
+        "value": "EUR"
+      }
+    }
+  },
+  "aggs": {
+    "my-cardinality-aggregation-name": {
+      "cardinality" : {
+        "field":"customer_id",
+        "precision_threshold": 3000
+      }
+    }
+  }
+}
+
+### 4.4.3 버킷집계
+### range
+GET /kibana_sample_data_flights/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "distnace-kilometers-range": {
+      "range" : {
+        "field":"DistanceKilometers",
+        "ranges": [
+          {
+            "to": 5000
+          },
+          {
+            "from": 5000,
+            "to": 10000
+          },
+          {
+            "to": 10000
+          }
+        ]
+      },
+      "aggs": {
+        "average-ticket-price": {
+          "avg": {
+            "field": "AvgTicketPrice"
+          }
+        }
+      }
+    }
+  }
+}
+
+### date_range
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "distnace-kilometers-range": {
+      "date_range" : {
+        "field":"order_date",
+        "ranges": [
+          {
+            "to": "now-10d/d"
+          },
+          {
+            "from": "now-10d/d",
+            "to": "now"
+          },
+          {
+            "to": "now"
+          }
+        ]
+      }
+    }
+  }
+}
+
+
+### histogram
+GET /kibana_sample_data_flights/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "my-histogram": {
+      "histogram" : {
+        "field":"DistanceKilometers",
+        "interval": 1000
+      }
+    }
+  }
+}
+
+### histogram + offset
+GET /kibana_sample_data_flights/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "my-histogram": {
+      "histogram" : {
+        "field":"DistanceKilometers",
+        "interval": 1000,
+        "offset": 50
+      }
+    }
+  }
+}
+
+
+### date_histogram
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "my-date-histogram": {
+      "date_histogram" : {
+        "field":"order_date",
+        "calendar_interval": "month"
+      }
+    }
+  }
+}
+
+### terms 집계
+GET /kibana_sample_data_logs/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "my-terms-aggs": {
+      "terms" : {
+        "field":"host.keyword",
+        "size": "10"
+      }
+    }
+  }
+}
+
+### composite 집계
+GET /kibana_sample_data_logs/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "composite-aggs": {
+      "composite" : {
+        "size": 100,
+        "sources": [
+          {
+            "terms-aggs": {
+              "terms": {
+                "field": "host.keyword"
+              }
+            }
+          },
+          {
+            "date-histogram-aggs": {
+              "date_histogram": {
+                "field": "@timestamp",
+                "calendar_interval": "day"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+
+
+### composite 집계 after
+GET /kibana_sample_data_logs/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "composite-aggs": {
+      "composite" : {
+        "size": 100,
+        "sources": [
+          {
+            "terms-aggs": {
+              "terms": {
+                "field": "host.keyword"
+              }
+            }
+          },
+          {
+            "date-histogram-aggs": {
+              "date_histogram": {
+                "field": "@timestamp",
+                "calendar_interval": "day"
+              }
+            }
+          }
+        ],
+        "after": {
+          "terms-aggs": "cdn.elastic-elastic-elastic.org",
+          "date-histogram-aggs": 1675209600000
+        }
+      }
+    }
+  }
+}
+
+
+### 4.4.4 파이프라인 집계
+### cumulative_sum 집계
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "daily-timestamp-bucket": {
+      "date_histogram" : {
+      "field": "order_date",
+      "calendar_interval": "day"
+      },
+      "aggs": {
+        "daily-total-quantity-average": {
+          "avg": {
+            "field": "total_quantity"
+          }
+        },
+        "pipeline-sum": {
+          "cumulative_sum": {
+            "buckets_path": "daily-total-quantity-average"
+          }
+        }
+      }
+    }
+  }
+}
+
+### max_bucket 집계
+GET /kibana_sample_data_ecommerce/_search
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "daily-timestamp-bucket": {
+      "date_histogram" : {
+        "field": "order_date",
+        "calendar_interval": "day"
+      },
+      "aggs": {
+        "daily-total-quantity-average": {
+          "avg": {
+          "field": "total_quantity"
+          }
+        }
+      }
+    },
+    "max-total-quantity": {
+      "max_bucket": {
+        "buckets_path": "daily-timestamp-bucket>daily-total-quantity-average"
+      }
+    }
+  }
+}

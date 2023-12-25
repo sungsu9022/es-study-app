@@ -9,3 +9,9 @@ jasypt:
     password: ${JASYPT_PASSWORD}
 
 --- # local
+spring.config.activate.on-profile: local
+
+jasypt:
+  encryptor:
+    bean: jasyptEncryptor
+    password: test

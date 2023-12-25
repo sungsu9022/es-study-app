@@ -1,7 +1,7 @@
 package com.starter.user.app.user.facade
 
 import com.starter.core.common.utils.UUIDUtils
-import com.starter.core.domain.user.models.UserVO
+import com.starter.core.rdb.domain.user.models.UserVO
 import com.starter.user.app.user.mapper.UserModelMapper
 import com.starter.user.app.user.model.UserCreateRequest
 import com.starter.user.app.user.service.UserService

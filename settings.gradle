@@ -5,4 +5,5 @@ include 'core'
 include 'admin'
 include 'db-migration'
 include 'user'
+include 'elasticsearch'
 

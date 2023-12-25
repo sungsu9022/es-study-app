@@ -2,7 +2,7 @@ package com.starter.user.app.user.controller
 
 import com.starter.core.common.response.ServiceResponse
 import com.starter.core.common.response.SuccessResponse
-import com.starter.core.domain.user.models.UserVO
+import com.starter.core.rdb.domain.user.models.UserVO
 import com.starter.user.app.user.facade.UserReadFacadeService
 import com.starter.user.app.user.facade.UserResisterFacadeService
 import com.starter.user.app.user.model.UserCreateRequest
