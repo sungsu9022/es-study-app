@@ -22,7 +22,9 @@ dependencies {
     // es 저수준 rest client
     implementation("org.elasticsearch.client:elasticsearch-rest-client:$esVersion")
     // es 고수준 rest client
-    implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:$esHighLevelClientVersion")
+    // implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:$esHighLevelClientVersion")
+    implementation(fileTree(mapOf("dir" to "manual-build", "includes" to listOf("*.jar"))))
+    implementation("org.elasticsearch:elasticsearch:$esVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
