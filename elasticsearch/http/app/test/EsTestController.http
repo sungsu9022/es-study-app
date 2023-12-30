@@ -1,0 +1,11 @@
+### 4.5.1 저수준 REST Client
+### get cluster-settings
+GET /api/es-test/cluster-settings
+Host: localhost:9903
+Content-Type: application/json
+
+### put cluster-settings
+PUT /api/es-test/cluster-settings/async
+Host: localhost:9903
+Content-Type: application/json
+
