@@ -9,3 +9,26 @@ PUT /api/es-test/cluster-settings/async
 Host: localhost:9903
 Content-Type: application/json
 
+### 4.5.2 고수준 REST Client
+### get sample
+GET /api/es-test/samples
+Host: localhost:9903
+Content-Type: application/json
+
+
+### search sample
+GET /api/es-test/samples/search
+Host: localhost:9903
+Content-Type: application/json
+
+### bluk
+POST /api/es-test/bulk
+Host: localhost:9903
+Content-Type: application/json
+
+### bluk-processor
+POST /api/es-test/bulk/processor
+Host: localhost:9903
+Content-Type: application/json
+
+{"id":"document-id-02"}

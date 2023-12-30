@@ -1,0 +1,33 @@
+### 4.5.2
+### PUT
+PUT /my-index-01/_doc/document-id-01?routing=abc123
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "title": "Hello world",
+  "views": 1234,
+  "public": true,
+  "created" : "2023-11-18T18:05:00.000Z"
+}
+
+### PUT2
+PUT /my-index-02/_doc/document-id-01?routing=abc123
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "title": "Hello world",
+  "views": 1234,
+  "public": true,
+  "created" : "2023-11-18T18:05:00.000Z"
+}
+
+
+### GET
+GET /my-index-01/_doc/document-id-02?routing=abc123
+Host: localhost:9200
+Content-Type: application/json
+
+
+
