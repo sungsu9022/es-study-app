@@ -1,11 +1,17 @@
 package com.starter.es.config.es
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient
+import co.elastic.clients.json.jackson.JacksonJsonpMapper
+import co.elastic.clients.transport.rest_client.RestClientOptions
+import co.elastic.clients.transport.rest_client.RestClientTransport
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.http.HttpHost
 import org.elasticsearch.action.ActionListener
 import org.elasticsearch.action.bulk.BackoffPolicy
 import org.elasticsearch.action.bulk.BulkProcessor
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.bulk.BulkResponse
+import org.elasticsearch.client.HttpAsyncResponseConsumerFactory
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestClientBuilder
@@ -18,10 +24,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class EsConfig {
+class EsConfig(
+    private val objectMapper: ObjectMapper,
+) {
     companion object {
         private const val ES_CONNECTION_TIMEOUT = 5000 // 5s
         private const val ES_SOCKET_TIMEOUT = 5000 // 5s
+        private const val CLIENT_BUFFER_SIZE = 500 * 1024 * 1024 // 500MB
     }
 
     @Bean("lowLevelEsRestClient")
@@ -30,10 +39,27 @@ class EsConfig {
             .build()
     }
 
+    @Bean
+    fun esJavaClient(
+        @Qualifier("lowLevelEsRestClient") lowLevelEsRestClient: RestClient,
+    ): ElasticsearchClient {
+        val restClientOptions = RestClientOptions(
+            RequestOptions.DEFAULT
+                .toBuilder()
+                .setHttpAsyncResponseConsumerFactory(
+                    HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(CLIENT_BUFFER_SIZE),
+                )
+                .build(),
+        )
+        val transport = RestClientTransport(lowLevelEsRestClient, JacksonJsonpMapper(objectMapper), restClientOptions,)
+        return ElasticsearchClient(transport)
+    }
+
     @Bean("highLevelEsRestClient")
-    fun highLevelEsRestClient(): RestHighLevelClient {
-        val builder = createBaseRestClientBuilder()
-        return RestHighLevelClientBuilder(builder.build())
+    fun highLevelEsRestClient(
+        @Qualifier("lowLevelEsRestClient") lowLevelEsRestClient: RestClient,
+    ): RestHighLevelClient {
+        return RestHighLevelClientBuilder(lowLevelEsRestClient)
             // NOTE es 8 이상일 경우 서버 호환을 위해 true로 설정
             .setApiCompatibilityMode(true)
             .build()

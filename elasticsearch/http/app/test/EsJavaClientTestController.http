@@ -1,0 +1,22 @@
+### 4.5.3 자바 클라이언트
+### index
+PUT /api/es-test/java/samples/index
+Host: localhost:9903
+Content-Type: application/json
+
+### get
+GET /api/es-test/java/samples/my-id-1
+Host: localhost:9903
+Content-Type: application/json
+
+### bulk
+POST /api/es-test/java/bulk
+Host: localhost:9903
+Content-Type: application/json
+
+### search
+GET /api/es-test/java/samples/search?fieldOneValue=world
+Host: localhost:9903
+Content-Type: application/json
+
+

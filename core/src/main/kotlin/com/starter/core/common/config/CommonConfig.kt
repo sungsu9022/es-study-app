@@ -1,5 +1,6 @@
 package com.starter.core.common.config
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -22,6 +23,7 @@ class CommonConfig {
     fun objectMapper(): ObjectMapper {
         val objectMapper = Jackson2ObjectMapperBuilder.json()
             .featuresToDisable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .build<ObjectMapper>()
         objectMapper.registerModule(JavaTimeModule())

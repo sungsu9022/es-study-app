@@ -1,4 +1,4 @@
-### 4.5.2
+### 4.5.2 high level rest Client
 ### PUT
 PUT /my-index-01/_doc/document-id-01?routing=abc123
 Host: localhost:9200
@@ -26,6 +26,12 @@ Content-Type: application/json
 
 ### GET
 GET /my-index-01/_doc/document-id-02?routing=abc123
+Host: localhost:9200
+Content-Type: application/json
+
+### 4.5.3 자바 클라이언트
+### index 확인
+GET /my-index/_search
 Host: localhost:9200
 Content-Type: application/json
 
