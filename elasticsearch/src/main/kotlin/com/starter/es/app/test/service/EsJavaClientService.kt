@@ -161,6 +161,6 @@ class EsJavaClientService(
 
     private fun concatNumber(baseNumber: Long, number: Long): Long {
         // 결과를 String으로 변환하고 나머지 빈 자리를 0으로 채웁니다.
-        return String.format("%d%03d", baseNumber, number).toLong()
+        return String.format("%d%04d", baseNumber, number).toLong()
     }
 }
