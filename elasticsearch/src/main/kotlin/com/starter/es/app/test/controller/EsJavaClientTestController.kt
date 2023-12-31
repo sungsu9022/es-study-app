@@ -40,4 +40,10 @@ class EsJavaClientTestController(
         val result = esJavaClientService.search(fieldOneValue)
         return SuccessResponse.of(result)
     }
+
+    @PostMapping("/bulk-ingester")
+    fun bulkIngester(): SuccessResponse<String> {
+        val result = esJavaClientService.bulkWithIngester()
+        return SuccessResponse.DEFAULT
+    }
 }

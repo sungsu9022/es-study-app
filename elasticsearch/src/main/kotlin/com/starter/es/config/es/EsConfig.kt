@@ -1,6 +1,7 @@
 package com.starter.es.config.es
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient
+import co.elastic.clients.elasticsearch._helpers.bulk.BulkIngester
 import co.elastic.clients.json.jackson.JacksonJsonpMapper
 import co.elastic.clients.transport.rest_client.RestClientOptions
 import co.elastic.clients.transport.rest_client.RestClientTransport
@@ -22,6 +23,7 @@ import org.elasticsearch.core.TimeValue
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.util.concurrent.TimeUnit
 
 @Configuration
 class EsConfig(
@@ -39,7 +41,7 @@ class EsConfig(
             .build()
     }
 
-    @Bean
+    @Bean("esJavaClient")
     fun esJavaClient(
         @Qualifier("lowLevelEsRestClient") lowLevelEsRestClient: RestClient,
     ): ElasticsearchClient {
@@ -51,8 +53,23 @@ class EsConfig(
                 )
                 .build(),
         )
-        val transport = RestClientTransport(lowLevelEsRestClient, JacksonJsonpMapper(objectMapper), restClientOptions,)
+        val transport = RestClientTransport(lowLevelEsRestClient, JacksonJsonpMapper(objectMapper), restClientOptions)
         return ElasticsearchClient(transport)
+    }
+
+    @Bean
+    fun bulkIngester(
+        @Qualifier("esJavaClient") esJavaClient: ElasticsearchClient,
+    ): BulkIngester<String> {
+        val listener = StringBulkIngestListener<String>()
+        return BulkIngester.of {
+            it.client(esJavaClient)
+                .maxOperations(200)
+                .maxConcurrentRequests(1)
+                .maxSize(5 * 1024 * 1024) // 5MB
+                .flushInterval(5L, TimeUnit.SECONDS)
+                .listener(listener)
+        }
     }
 
     @Bean("highLevelEsRestClient")

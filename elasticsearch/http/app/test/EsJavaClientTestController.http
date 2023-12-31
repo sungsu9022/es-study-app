@@ -19,4 +19,9 @@ GET /api/es-test/java/samples/search?fieldOneValue=world
 Host: localhost:9903
 Content-Type: application/json
 
+### bulk-ingester
+POST /api/es-test/java/bulk-ingester
+Host: localhost:9903
+Content-Type: application/json
+
 
