@@ -1,0 +1,118 @@
+### 6.1 클러스터 설정 API
+### _cluster/settings
+GET /_cluster/settings
+Host: localhost:9200
+Content-Type: application/json
+
+### put _cluster/settings
+PUT /_cluster/settings
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "persistent": {
+    "indices.breaker.total.limit": "70%"
+  },
+  "transient": {
+    "cluster.routing.allocation.enable":"primaries",
+    "indices.breaker.total.limit": "90%"
+  }
+}
+
+### 6.2 cat API
+### health
+GET /_cat/health?v
+Host: localhost:9200
+Content-Type: application/json
+
+### indices
+GET /_cat/indices
+Host: localhost:9200
+Content-Type: application/json
+
+### nodes
+GET /_cat/nodes
+Host: localhost:9200
+Content-Type: application/json
+
+### shards
+GET /_cat/shards
+Host: localhost:9200
+Content-Type: application/json
+
+### segments
+GET /_cat/segments
+Host: localhost:9200
+Content-Type: application/json
+
+### recovery
+GET /_cat/recovery
+Host: localhost:9200
+Content-Type: application/json
+
+### allocation
+GET /_cat/allocation
+Host: localhost:9200
+Content-Type: application/json
+
+### thread_pool
+GET /_cat/thread_pool
+Host: localhost:9200
+Content-Type: application/json
+
+### master
+GET /_cat/master
+Host: localhost:9200
+Content-Type: application/json
+
+
+### 6.3 인덱스 운영전략
+### 6.3.4 aliases
+POST /_aliases
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "actions": [
+    {
+      "add": {
+        "index": "my_index3",
+        "alias": "my_alias_name"
+      }
+    },
+    {
+      "add": {
+        "index": "my_index2",
+        "alias": "my_alias_name",
+        "is_write_index": true
+      }
+    }
+  ]
+}
+
+### 6.3.4 remove aliases
+POST /_aliases
+Host: localhost:9200
+Content-Type: application/json
+
+{
+  "actions": [
+    {
+      "remove": {
+        "index": "my_index3",
+        "alias": "my_alias_name"
+      }
+    }
+  ]
+}
+
+### 6.3.4 aliases get
+GET /_alias/my_alias_name
+Host: localhost:9200
+Content-Type: application/json
+
+### 6.3.5 롤오버
+POST /my_alias_name/_rollover
+Host: localhost:9200
+Content-Type: application/json
+
